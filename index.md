@@ -1,37 +1,199 @@
-## Welcome to GitHub Pages
+# wikmd
+![preview](images/wiki.gif)
 
-You can use the [editor on GitHub](https://github.com/Linbreux/wikmd/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+## What is it?
+It’s a file-based wiki that aims to simplicity. The documents are completely written in Markdown which is an easy markup language that you can learn in 60 sec.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Why markdown?
+If you compare markdown to a WYSIWYG editor it may look less easy to use but the opposite is true. When writing markdown you don’t get to see the result directly which is the only downside. Their are more pros: - Easy to process to other file formats - Scalable, it reformats for the perfect display width
 
-### Markdown
+## How does it work?
+Instead of storing the data in a database I chose to have a file-based system. The advantage of this system is that every file is directly readable inside a terminal etc. Also when you have direct access to the system you can export the files to anything you like.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+To view the documents in the browser, the document is converted to html.
 
-```markdown
-Syntax highlighted code block
+## Features
+- git support (version control)
+- image support including sizing and referencing
+- math/latex
+- code highlight
+- file searching
+- file based
+- dark theme
+- codemirror for editing
 
-# Header 1
-## Header 2
-### Header 3
+## Installation
+! It's tested on windows and linux based systems.
+! Runs on flask server
 
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+Clone te repository
+```
+git clone https://github.com/Linbreux/wikmd.git
+```
+cd in wikmd
+```
+cd wikmd
 ```
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+Create a virtual env and activate it(optional)
+```
+virtualenv venv
+source venv/bin/activate
+```
+Install requirements
+```
+pip install -r requirements.txt
+```
+Run the wiki
+```
+export FLASK_APP=wiki.py
+flask run --host=0.0.0.0
+```
 
-### Jekyll Themes
+Now visit localhost:5000 and you will see the wiki. With the 0.0.0.0. option it will show up everywhere on the network.
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Linbreux/wikmd/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+If there are problems feel free to open an github issue you could post the output of wikmd.log to it.
 
-### Support or Contact
+### Linux
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+Maybe you need to install pandoc on your system before this works.
+```
+sudo apt-get update && sudo apt-get install pandoc
+```
+
+### Windows
+
+You should install [pandoc](https://pandoc.org/installing.html) on your windows system. Now you should be able to start
+the server.
+```
+python wiki.py
+```
+If the content of the markdown files are not visible you should add the `pandoc-xnos` location to your path variable. Info about [Environment variables](https://www.computerhope.com/issues/ch000549.htm).
+```
+pip show --files pandoc-xnos
+# look for "location" in the output
+# example: C:\users\<user>\appdata\local\packages\pythonsoftwarefoundation.python.3.x\localcache\local-packages\python38\site-packages
+# change "site-packages" to "Scripts"
+# example: C:\Users\<user>\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.x\LocalCache\local-packages\Python38\Scripts
+# open your Environment variables and add the changed line to the path
+SET PATH=%PATH%;C:\Users\<user>\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.x\LocalCache\local-packages\Python38\Scripts
+```
+
+
+## Docker install
+
+### Build docker
+```
+docker build -t wiki-md:latest .
+```
+### Run Docker
+
+You may need to create wiki/data in your homefolder or you can change it if you want another place.
+
+```
+sudo docker run -d -p 5000:5000 -v ~/wiki/data:/app/wiki wiki-md
+```
+If you would like to have the default files inside your instance, you should copy the wiki files to ~/wiki/data in this case.
+Also highly recommended is to create a folder 'img' inside 'wiki/'
+
+```
+cp wikmd/wiki/* ~/wiki/data/
+mkdir ~/wiki/img
+```
+
+### Image support
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Markdown-mark.svg/208px-Markdown-mark.svg.png)
+
+### Latex support
+
+$$x_{1,2} = \frac{-b ± \sqrt{b^2 - 4 a c}}{2a}$$
+## Homepage
+
+The homepage is default the "homepage.md" file, this can't be changed. If this file doesn't exist create it in de wiki folder.
+
+## Uploaded images
+
+If you have images that you don't want to be available on the internet, you can put them inside the folder **"wiki/img/"** for example **"testfile.png"**, now you can link to **"/wiki/img/testfile.png"**
+
+## Custom data path
+
+Usually, wikmd looks for content in the subfolder `wiki`. In case you want to store your wiki data somewhere else, you can set a custom data path via the environment variable `WIKI_DATA`:
+
+```
+export WIKI_DATA="~/.wikidata"
+```
+
+## Custom picture upload
+
+It's possible to add a custom picture upload path. This is done by adding a `IMAGE_ROUTE` environment variable.
+
+```
+export IMAGES_ROUTE="media/pictures"
+```
+
+Thanks to @reactorcoremeltdown
+
+## Latex
+
+It's possible to use latex syntax inside your markdown because the markdown is first converted to latex and after that to html. This means you have a lot more flexibility.
+
+### Change image size
+```
+![](https://i.ibb.co/Dzp0SfC/download.jpg){width="50%"}
+```
+
+### Image references
+```
+![Nice mountain](https://i.ibb.co/Dzp0SfC/download.jpg){#fig:mountain width="50%"}
+
+Inside picture @fig:mountain you can see a nice mountain.
+
+```
+
+### Math
+```
+\begin{align}
+y(x) &= \int_0^\infty x^{2n} e^{-a x^2}\,dx\\
+&= \frac{2n-1}{2a} \int_0^\infty x^{2(n-1)} e^{-a x^2}\,dx\\
+&= \frac{(2n-1)!!}{2^{n+1}} \sqrt{\frac{\pi}{a^{2n+1}}}\\
+&= \frac{(2n)!}{n! 2^{2n+1}} \sqrt{\frac{\pi}{a^{2n+1}}}
+\end{align}
+```
+
+```
+You can also use $inline$ math to show $a=2$ and $b=8$
+```
+
+## Converting the files
+
+Open the wiki folder of your instance.  
+
+|- static  
+|- templates  
+|- **wiki** <--This folder  
+|- wiki.py  
+
+In this folder all the markdownfiles are listed. Editing the files will be visible in the web-version.  
+
+|- homepage.md  
+|- How to use the wiki.md  
+|- Markdown cheatsheet.md  
+
+The advantage is that u can use the commandline to process some data. For example using pandoc:
+```
+pandoc -f markdown -t latex homepage.md How\ to\ use\ the\ wiki.md -o file.pdf --pdf-engine=xelatex
+```
+This creates a nice pdf version of your article.  Its possible you have to create a yml header on top of your document to set the margins etc better
+```
+---
+title: titlepage
+author: your name
+date: 05-11-2020
+geometry: margin=2.5cm
+header-includes: |
+        \usepackage{caption}
+        \usepackage{subcaption}
+lof: true
+---
+```
+For more information you have to read the pandoc documentation.
