@@ -52,6 +52,8 @@ def search():
     app.logger.info("searching for " + search_term + " ...")
 
     for root, subfolder, files in os.walk(WIKI_DATA):
+        files = [f for f in files if not f[0] == '.']
+        subfolder[:] = [d for d in subfolder if not d[0] == '.']
         for item in files:
             path = os.path.join(root, item)
             if os.path.join(WIKI_DATA, '.git') in str(path):
@@ -94,6 +96,8 @@ def list_full_wiki():
 def list_wiki(folderpath):
     list = []
     for root, subfolder, files in os.walk(os.path.join(WIKI_DATA, folderpath)):
+        files = [f for f in files if not f[0] == '.']
+        subfolder[:] = [d for d in subfolder if not d[0] == '.']
         if root[-1] == '/':
             root = root[:-1]
         for item in files:
